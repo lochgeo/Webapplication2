@@ -30,21 +30,21 @@ namespace WebApplication2.Controllers
         {
             var db = new ApplicationDbContext();
             var account = db.InvoiceAccounts.Single(InvoiceAccount => InvoiceAccount.InvoiceAccountId == id);
+            ViewBag.AccountNumber = account.AccountNumber;
 
-            var obj = new AccessInvoiceAccountViewModel
+            var accessCode = new AccessCode
             {
-                InvoiceAccountId = account.InvoiceAccountId,
-                AccountNumber = account.AccountNumber,
-                BuyerEmail = String.Empty,
-                UniqueCode = String.Empty
+                BuyerEmail = string.Empty,
+                InvoiceAccountId = id,
+                AccessCodeId = 0,
+                UniqueCode = string.Empty
             };
-
-            return View(obj);
+            return View(accessCode);
         }
 
         // POST: AccessCode/Create
         [HttpPost]
-        public ActionResult Create(AccessInvoiceAccountViewModel model)
+        public ActionResult Create(AccessCode model)
         {
             var db = new ApplicationDbContext();
             try
@@ -53,14 +53,14 @@ namespace WebApplication2.Controllers
                 {
                     BuyerEmail = model.BuyerEmail,
                     InvoiceAccountId = model.InvoiceAccountId,
-                    AccessCodeId = db.InvoiceAccounts.Count() + 1,
+                    AccessCodeId = db.AccessCodes.Count() + 1,
                     UniqueCode = RandomString(8)
                 };
 
                 db.AccessCodes.Add(accessCode);
                 db.SaveChanges();
 
-                return View("Index");
+                return RedirectToAction("Index");
             }
             catch
             {
@@ -72,7 +72,7 @@ namespace WebApplication2.Controllers
 
         public static string RandomString(int length)
         {
-            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            const string chars = "abcdefghjkmnpqrstuvwxyz0123456789#$%&";
             return new string(Enumerable.Repeat(chars, length)
               .Select(s => s[random.Next(s.Length)]).ToArray());
         }

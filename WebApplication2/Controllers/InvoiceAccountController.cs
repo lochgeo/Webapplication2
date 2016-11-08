@@ -51,8 +51,8 @@ namespace WebApplication2.Controllers
 
                 db.InvoiceAccounts.Add(invoiceAccount);
                 db.SaveChanges();
-                
-                return View("Index");
+
+                return RedirectToAction("Index");
             }
             catch
             {
