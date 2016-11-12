@@ -5,9 +5,9 @@ using Microsoft.Owin;
 using Microsoft.Owin.Security.Cookies;
 using Microsoft.Owin.Security.Google;
 using Owin;
-using WebApplication2.Models;
+using AccountRegistry.Models;
 
-namespace WebApplication2
+namespace AccountRegistry
 {
     public partial class Startup
     {

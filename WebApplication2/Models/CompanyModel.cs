@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
 
-namespace WebApplication2.Models
+namespace AccountRegistry.Models
 {
     public class Company
     {
@@ -17,6 +17,10 @@ namespace WebApplication2.Models
         [Required]
         [Display(Name = "CVR Number")]
         public string CVRNumber { get; set; }
+
+        [Required]
+        [Display(Name = "Ethereum Address")]
+        public string Address { get; set; }
 
         public virtual ApplicationUser User { get; set; }
 

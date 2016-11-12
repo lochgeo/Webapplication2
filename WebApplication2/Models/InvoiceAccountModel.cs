@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
 
-namespace WebApplication2.Models
+namespace AccountRegistry.Models
 {
     public class InvoiceAccount
     {

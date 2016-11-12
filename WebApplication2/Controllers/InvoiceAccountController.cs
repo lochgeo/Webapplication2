@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using WebApplication2.Models;
+using AccountRegistry.Models;
 using Microsoft.AspNet.Identity;
 
-namespace WebApplication2.Controllers
+namespace AccountRegistry.Controllers
 {
     [Authorize]
     public class InvoiceAccountController : Controller
