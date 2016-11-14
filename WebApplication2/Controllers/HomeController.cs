@@ -1,6 +1,8 @@
-﻿using System;
+﻿using AccountRegistry.Services;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 
@@ -10,6 +12,15 @@ namespace AccountRegistry.Controllers
     {
         public ActionResult Index()
         {
+            var eth = new Ethereum();
+
+            Task.Run(async () =>
+            {
+                var BlockNumber = await eth.GetBlockNum();
+                ViewBag.BlockNumber = BlockNumber.Value;
+
+            }).Wait();
+
             return View();
         }
 

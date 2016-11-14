@@ -10,7 +10,7 @@ namespace AccountRegistry.Migrations
         public Configuration()
         {
             AutomaticMigrationsEnabled = true;
-            ContextKey = "WebApplication2.Models.ApplicationDbContext";
+            ContextKey = "AccountRegistry.Models.ApplicationDbContext";
         }
 
         protected override void Seed(AccountRegistry.Models.ApplicationDbContext context)

@@ -9,6 +9,7 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using AccountRegistry.Models;
+using AccountRegistry.Services;
 
 namespace AccountRegistry.Controllers
 {
@@ -155,12 +156,15 @@ namespace AccountRegistry.Controllers
                 var result = await UserManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
+                    var eth = new Ethereum();
+                    string address = await eth.NewAccount(model.Password);
                     var db = new ApplicationDbContext();
                     var company = new Company
                     {
                         CompanyId = db.Companies.Count() + 1,
                         CompanyName = model.CompanyName,
                         CVRNumber = model.CVRNumber,
+                        Address = address,
                         ApplicationUserId = user.Id
                     };
                     db.Companies.Add(company);
