@@ -438,6 +438,38 @@ namespace AccountRegistry.Controllers
             base.Dispose(disposing);
         }
 
+        // GET: /Account/Buyer
+        [AllowAnonymous]
+        public ActionResult Buyer()
+        {
+            return View();
+        }
+
+        // POST: /Account/Buyer
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public ActionResult Buyer(BuyerViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var db = new ApplicationDbContext();
+                var accessCode = db.AccessCodes.SingleOrDefault(AccessCode => AccessCode.BuyerEmail == model.Email);
+
+                if (accessCode != null)
+                {
+                    if (accessCode.UniqueCode == model.AccessCode)
+                    {
+                        var invoiceAccount = db.InvoiceAccounts.Single(InvoiceAccount => InvoiceAccount.InvoiceAccountId == accessCode.InvoiceAccountId);
+                        ViewBag.AccountNumber = invoiceAccount.AccountNumber;
+                        ViewBag.AccountName = invoiceAccount.AccountName;
+                    }
+                }
+            }
+
+            return View();
+        }
+
         #region Helpers
         // Used for XSRF protection when adding external logins
         private const string XsrfKey = "XsrfId";

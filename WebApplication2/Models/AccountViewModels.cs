@@ -136,4 +136,18 @@ namespace AccountRegistry.Models
         [Display(Name = "Access Code")]
         public string UniqueCode { get; set; }
     }
+
+    public class BuyerViewModel
+    {
+        [Required]
+        [EmailAddress]
+        [Display(Name = "Email")]
+        public string Email { get; set; }
+
+        [Required]
+        [DataType(DataType.Password)]
+        [Display(Name = "Access Code")]
+        public string AccessCode { get; set; }
+
+    }
 }

@@ -348,6 +348,7 @@
     <Content Include="Views\AccessCode\Create.cshtml" />
     <Content Include="Views\InvoiceAccount\Index.cshtml" />
     <Content Include="Views\AccessCode\Index.cshtml" />
+    <Content Include="Views\Account\Buyer.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
