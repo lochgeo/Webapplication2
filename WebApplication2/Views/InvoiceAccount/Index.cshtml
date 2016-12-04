@@ -26,7 +26,7 @@
 @foreach (var item in Model) {
     <tr>
         <td>
-            @Html.DisplayFor(modelItem => item.AccountNumber)
+            @Html.ActionLink(item.AccountNumber, "Details", new { id = item.InvoiceAccountId })
         </td>
         <td>
             @Html.DisplayFor(modelItem => item.AccountName)
@@ -36,6 +36,7 @@
         </td>
         <td>
             @Html.ActionLink("Edit", "Edit", new { id=item.InvoiceAccountId }) |
+            @Html.ActionLink("Delete", "Delete", new { id = item.InvoiceAccountId }) |
             @Html.ActionLink("Share", "Create", "AccessCode", new { id=item.InvoiceAccountId },null)
         </td>
     </tr> 

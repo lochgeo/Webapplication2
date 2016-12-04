@@ -15,7 +15,12 @@ namespace AccountRegistry.Controllers
         public ActionResult Index()
         {
             var db = new ApplicationDbContext();
-            var AccessList = db.AccessCodes;
+            var user = User.Identity.GetUserId();
+            var AccountList = db.InvoiceAccounts
+                .Where(InvoiceAccount => InvoiceAccount.ApplicationUserId == user)
+                .Select(InvoiceAccount => InvoiceAccount.InvoiceAccountId).ToList();
+            var AccessList = db.AccessCodes
+                .Where(a => AccountList.Contains(a.InvoiceAccountId));
             return View(AccessList);
         }
 

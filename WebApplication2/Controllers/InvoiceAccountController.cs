@@ -24,8 +24,8 @@ namespace AccountRegistry.Controllers
         public ActionResult Details(int id)
         {
             var db = new ApplicationDbContext();
-            var AccountList = db.InvoiceAccounts.Single(InvoiceAccount => InvoiceAccount.InvoiceAccountId == id); 
-            return View(AccountList);
+            var Account = db.InvoiceAccounts.Single(InvoiceAccount => InvoiceAccount.InvoiceAccountId == id); 
+            return View(Account);
         }
 
         // GET: InvoiceAccount/Create
@@ -63,7 +63,9 @@ namespace AccountRegistry.Controllers
         // GET: InvoiceAccount/Edit/5
         public ActionResult Edit(int id)
         {
-            return View();
+            var db = new ApplicationDbContext();
+            var Account = db.InvoiceAccounts.Single(InvoiceAccount => InvoiceAccount.InvoiceAccountId == id);
+            return View(Account);
         }
 
         // POST: InvoiceAccount/Edit/5
@@ -72,10 +74,23 @@ namespace AccountRegistry.Controllers
         {
             try
             {
-                // TODO: Add update logic here
+                var db = new ApplicationDbContext();
 
+                var invoiceAccount = new InvoiceAccount
+                {
+                    AccountNumber = collection["AccountNumber"].ToString(),
+                    AccountName = collection["AccountName"].ToString(),
+                    ApplicationUserId = User.Identity.GetUserId(),
+                    InvoiceAccountId = id
+                };
+
+                db.InvoiceAccounts.Attach(invoiceAccount);
+                var entry = db.Entry(invoiceAccount);
+                entry.Property(e => e.AccountNumber).IsModified = true;
+                entry.Property(e => e.AccountName).IsModified = true;
+                db.SaveChanges();
                 return RedirectToAction("Index");
-            }
+        } 
             catch
             {
                 return View();
@@ -85,7 +100,9 @@ namespace AccountRegistry.Controllers
         // GET: InvoiceAccount/Delete/5
         public ActionResult Delete(int id)
         {
-            return View();
+            var db = new ApplicationDbContext();
+            var Account = db.InvoiceAccounts.Single(InvoiceAccount => InvoiceAccount.InvoiceAccountId == id);
+            return View(Account);
         }
 
         // POST: InvoiceAccount/Delete/5
@@ -94,8 +111,11 @@ namespace AccountRegistry.Controllers
         {
             try
             {
-                // TODO: Add delete logic here
-
+                var db = new ApplicationDbContext();
+                var invoiceAccount = new InvoiceAccount {InvoiceAccountId = id};
+                db.InvoiceAccounts.Attach(invoiceAccount);
+                db.InvoiceAccounts.Remove(invoiceAccount);
+                db.SaveChanges();
                 return RedirectToAction("Index");
             }
             catch

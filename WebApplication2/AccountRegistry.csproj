@@ -349,6 +349,8 @@
     <Content Include="Views\InvoiceAccount\Index.cshtml" />
     <Content Include="Views\AccessCode\Index.cshtml" />
     <Content Include="Views\Account\Buyer.cshtml" />
+    <Content Include="Views\InvoiceAccount\Edit.cshtml" />
+    <Content Include="Views\InvoiceAccount\Delete.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
