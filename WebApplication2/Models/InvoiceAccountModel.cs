@@ -18,6 +18,10 @@ namespace AccountRegistry.Models
         [Display(Name = "Account Name")]
         public string AccountName { get; set; }
 
+        [Required]
+        [Display(Name = "Confirmed")]
+        public string Confirmed { get; set; }
+
         public virtual ApplicationUser User { get; set; }
 
         [Required]

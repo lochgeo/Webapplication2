@@ -5,6 +5,8 @@ using System.Web;
 using System.Web.Mvc;
 using AccountRegistry.Models;
 using Microsoft.AspNet.Identity;
+using System.Threading.Tasks;
+using AccountRegistry.Services;
 
 namespace AccountRegistry.Controllers
 {
@@ -46,11 +48,29 @@ namespace AccountRegistry.Controllers
                     AccountNumber = collection["AccountNumber"].ToString(),
                     AccountName = collection["AccountName"].ToString(),
                     ApplicationUserId = User.Identity.GetUserId(),
+                    Confirmed = "No",
                     InvoiceAccountId = db.InvoiceAccounts.Count() + 1                 
                 };
 
                 db.InvoiceAccounts.Add(invoiceAccount);
                 db.SaveChanges();
+
+                Task.Run(async () =>
+                {
+                    var userId = User.Identity.GetUserId();
+                    var address = db.Companies.Where(a => a.ApplicationUserId == userId).Select(a => a.Address).ToList<string>();
+                    var eth = new Ethereum(address[0]);
+                    var result = await eth.ExecuteContractStore("h@ck3r00", invoiceAccount.AccountNumber, invoiceAccount.AccountName);
+
+                    if (result == "Account registered")
+                    {
+                        invoiceAccount.Confirmed = "Yes";
+                        db.InvoiceAccounts.Attach(invoiceAccount);
+                        var entry = db.Entry(invoiceAccount);
+                        entry.Property(e => e.Confirmed).IsModified = true;
+                        db.SaveChanges();
+                    }
+                });
 
                 return RedirectToAction("Index");
             }

@@ -16,8 +16,8 @@ namespace AccountRegistry.Services
         private readonly Web3 web3;
         private Contract contract;
         string senderAddress = "";
-        static string contractAddress = "0x28ea3b854008249cf823e517f7ea5f08cbea820e";
-        static string contractAbi = @"[{""constant"":false,""inputs"":[{""name"":""seller"",""type"":""address""},{""name"":""buyer_email"",""type"":""string""},{""name"":""account_number"",""type"":""string""}],""name"":""Authorize"",""outputs"":[{""name"":""result"",""type"":""string""}],""payable"":false,""type"":""function""},{""constant"":false,""inputs"":[{""name"":""seller"",""type"":""address""},{""name"":""account_number"",""type"":""string""},{""name"":""account_name"",""type"":""string""}],""name"":""StoreAccount"",""outputs"":[{""name"":""result"",""type"":""string""}],""payable"":false,""type"":""function""},{""constant"":false,""inputs"":[{""name"":""seller"",""type"":""address""},{""name"":""buyer_email"",""type"":""string""},{""name"":""account_number"",""type"":""string""}],""name"":""ViewAccount"",""outputs"":[{""name"":""result"",""type"":""string""}],""payable"":false,""type"":""function""},{""constant"":false,""inputs"":[{""name"":""seller"",""type"":""address""},{""name"":""buyer_email"",""type"":""string""},{""name"":""account_number"",""type"":""string""}],""name"":""Revoke"",""outputs"":[{""name"":""result"",""type"":""string""}],""payable"":false,""type"":""function""},{""anonymous"":false,""inputs"":[{""indexed"":true,""name"":""seller"",""type"":""address""},{""indexed"":false,""name"":""result"",""type"":""string""}],""name"":""NotifyResult"",""type"":""event""}]";
+        static string contractAddress = "0x086eae4f48d47b7ea62d7cc1e8901c5394361a0a";
+        static string contractAbi = @"[{""constant"":false,""inputs"":[{""name"":""seller"",""type"":""address""},{""name"":""buyer_email"",""type"":""string""},{""name"":""account_number"",""type"":""string""}],""name"":""Authorize"",""outputs"":[{""name"":""result"",""type"":""string""}],""payable"":false,""type"":""function""},{""constant"":false,""inputs"":[{""name"":""seller"",""type"":""address""},{""name"":""account_number"",""type"":""string""},{""name"":""account_name"",""type"":""string""}],""name"":""StoreAccount"",""outputs"":[{""name"":""result"",""type"":""string""}],""payable"":false,""type"":""function""},{""constant"":false,""inputs"":[{""name"":""seller"",""type"":""address""},{""name"":""buyer_email"",""type"":""string""},{""name"":""account_number"",""type"":""string""}],""name"":""ViewAccount"",""outputs"":[{""name"":""result"",""type"":""string""}],""payable"":false,""type"":""function""},{""constant"":false,""inputs"":[{""name"":""seller"",""type"":""address""},{""name"":""buyer_email"",""type"":""string""},{""name"":""account_number"",""type"":""string""}],""name"":""Revoke"",""outputs"":[{""name"":""result"",""type"":""string""}],""payable"":false,""type"":""function""},{""anonymous"":false,""inputs"":[{""indexed"":false,""name"":""seller"",""type"":""address""},{""indexed"":false,""name"":""result"",""type"":""string""}],""name"":""NotifyResult"",""type"":""event""}]";
 
         public Ethereum()
         {
@@ -44,62 +44,100 @@ namespace AccountRegistry.Services
 
         public async Task<string> ExecuteContractStore(string passPhrase, string accountNumber, string accountName)
         {
-            var gas = new HexBigInteger(1000000);
-            var res = await web3.Personal.UnlockAccount.SendRequestAsync(senderAddress, passPhrase, new HexBigInteger(120));
+            try
+            {
+                var gas = new HexBigInteger(3000000);
+                var res = await web3.Personal.UnlockAccount.SendRequestAsync(senderAddress, passPhrase, new HexBigInteger(120));
 
-            Function storeFn = contract.GetFunction("StoreAccount");
-            Event notifyResult = contract.GetEvent("NotifyResult");
-            var filterAll = await notifyResult.CreateFilterAsync();
-            var storeTxHash = await storeFn.SendTransactionAsync(senderAddress, gas, null, senderAddress, accountNumber, accountName);
-            var receipt = await GetReceiptAsync(storeTxHash);
-            var log = await notifyResult.GetFilterChanges<NotifyEvent>(filterAll);
+                Function storeFn = contract.GetFunction("StoreAccount");
+                Event notifyResult = contract.GetEvent("NotifyResult");
+                var filterAll = await notifyResult.CreateFilterAsync();
+                var storeTxHash = await storeFn.SendTransactionAsync(senderAddress, gas, null, senderAddress, accountNumber, accountName);
+                var receipt = await GetReceiptAsync(storeTxHash);
+                var log = await notifyResult.GetFilterChanges<NotifyEvent>(filterAll);
 
-            return log[0].Event.Result;
+                return log[0].Event.Result;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
         }
 
         public async Task<string> ExecuteContractView(string passPhrase, string buyerEmail, string accountNumber)
         {
-            var gas = new HexBigInteger(1000000);
-            var res = await web3.Personal.UnlockAccount.SendRequestAsync(senderAddress, passPhrase, new HexBigInteger(120));
+            try
+            {
+                var gas = new HexBigInteger(3000000);
+                var res = await web3.Personal.UnlockAccount.SendRequestAsync(senderAddress, passPhrase, new HexBigInteger(120));
 
-            Function viewFn = contract.GetFunction("ViewAccount");
-            Event notifyResult = contract.GetEvent("NotifyResult");
-            var filterAll = await notifyResult.CreateFilterAsync();
-            var viewTxHash = await viewFn.SendTransactionAsync(senderAddress, gas, null, senderAddress, buyerEmail, accountNumber);
-            var receipt = await GetReceiptAsync(viewTxHash);
-            var log = await notifyResult.GetFilterChanges<NotifyEvent>(filterAll);
+                Function viewFn = contract.GetFunction("ViewAccount");
+                Event notifyResult = contract.GetEvent("NotifyResult");
+                var filterAll = await notifyResult.CreateFilterAsync();
+                var viewTxHash = await viewFn.SendTransactionAsync(senderAddress, gas, null, senderAddress, buyerEmail, accountNumber);
+                var receipt = await GetReceiptAsync(viewTxHash);
+                var log = await notifyResult.GetFilterChanges<NotifyEvent>(filterAll);
 
-            return log[0].Event.Result;
+                return log[0].Event.Result;
+            }
+            catch (Exception e)
+            {
+
+                throw e;
+            }
         }
 
         public async Task<string> ExecuteContractAuth(string passPhrase, string buyerEmail, string accountNumber)
         {
-            var gas = new HexBigInteger(1000000);
-            var res = await web3.Personal.UnlockAccount.SendRequestAsync(senderAddress, passPhrase, new HexBigInteger(120));
+            try { 
+                var gas = new HexBigInteger(3000000);
+                var res = await web3.Personal.UnlockAccount.SendRequestAsync(senderAddress, passPhrase, new HexBigInteger(120));
 
-            Function authFn = contract.GetFunction("StoreAccount");
-            Event notifyResult = contract.GetEvent("NotifyResult");
-            var filterAll = await notifyResult.CreateFilterAsync();
-            var authTxHash = await authFn.SendTransactionAsync(senderAddress, gas, null, senderAddress, buyerEmail, accountNumber);
-            var receipt = await GetReceiptAsync(authTxHash);
-            var log = await notifyResult.GetFilterChanges<NotifyEvent>(filterAll);
+                Function authFn = contract.GetFunction("Authorize");
+                Event notifyResult = contract.GetEvent("NotifyResult");
+                var filterAll = await notifyResult.CreateFilterAsync();
+                var authTxHash = await authFn.SendTransactionAsync(senderAddress, gas, null, senderAddress, buyerEmail, accountNumber);
+                var receipt = await GetReceiptAsync(authTxHash);
+                var log = await notifyResult.GetFilterChanges<NotifyEvent>(filterAll);
 
-            return log[0].Event.Result;
+                if(log == null)
+                {
+                    return "Buyer Authorised";
+                }
+                else
+                {
+                    return log[1].Event.Result;
+
+                }
+            }
+            catch(Exception e)
+            {
+                throw e;
+            }
         }
 
         public async Task<string> ExecuteContractRevoke(string passPhrase, string buyerEmail, string accountNumber)
         {
-            var gas = new HexBigInteger(1000000);
-            var res = await web3.Personal.UnlockAccount.SendRequestAsync(senderAddress, passPhrase, new HexBigInteger(120));
+            try
+            {
+                var gas = new HexBigInteger(3000000);
+                var res = await web3.Personal.UnlockAccount.SendRequestAsync(senderAddress, passPhrase, new HexBigInteger(120));
 
-            Function revokeFn = contract.GetFunction("StoreAccount");
-            Event notifyResult = contract.GetEvent("NotifyResult");
-            var filterAll = await notifyResult.CreateFilterAsync();
-            var revokeTxHash = await revokeFn.SendTransactionAsync(senderAddress, gas, null, senderAddress, buyerEmail, accountNumber);
-            var receipt = await GetReceiptAsync(revokeTxHash);
-            var log = await notifyResult.GetFilterChanges<NotifyEvent>(filterAll);
+                Function revokeFn = contract.GetFunction("Revoke");
+                Event notifyResult = contract.GetEvent("NotifyResult");
+                var filterAll = await notifyResult.CreateFilterAsync();
+                var revokeTxHash = await revokeFn.SendTransactionAsync(senderAddress, gas, null, senderAddress, buyerEmail, accountNumber);
+                var receipt = await GetReceiptAsync(revokeTxHash);
+                var log = await notifyResult.GetFilterChanges<NotifyEvent>(filterAll);
 
-            return log[0].Event.Result;
+                return log[0].Event.Result;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
         }
 
         public async Task<TransactionReceipt> GetReceiptAsync(string transactionHash)
@@ -108,7 +146,6 @@ namespace AccountRegistry.Services
 
             while (receipt == null)
             {
-                Console.WriteLine("Sleeping for 1s");
                 Thread.Sleep(1000);
                 receipt = await web3.Eth.Transactions.GetTransactionReceipt.SendRequestAsync(transactionHash);
             }

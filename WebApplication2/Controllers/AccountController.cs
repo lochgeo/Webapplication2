@@ -455,14 +455,29 @@ namespace AccountRegistry.Controllers
             {
                 var db = new ApplicationDbContext();
                 var accessCode = db.AccessCodes.SingleOrDefault(AccessCode => AccessCode.BuyerEmail == model.Email);
+                ViewBag.AccountNumber = "Not Available";
+                ViewBag.AccountName = "Not Available";
 
                 if (accessCode != null)
                 {
                     if (accessCode.UniqueCode == model.AccessCode)
                     {
                         var invoiceAccount = db.InvoiceAccounts.Single(InvoiceAccount => InvoiceAccount.InvoiceAccountId == accessCode.InvoiceAccountId);
-                        ViewBag.AccountNumber = invoiceAccount.AccountNumber;
-                        ViewBag.AccountName = invoiceAccount.AccountName;
+
+                        Task.Run(async () =>
+                        {
+                            var userId = User.Identity.GetUserId();
+                            var address = db.Companies.Where(a => a.ApplicationUserId == userId).Select(a => a.Address).ToList<string>();
+                            var eth = new Ethereum(address[0]);
+                            var result = await eth.ExecuteContractView("h@ck3r00", accessCode.BuyerEmail, invoiceAccount.AccountNumber);
+
+                            if (result == "Valid account")
+                            {
+                                ViewBag.AccountNumber = invoiceAccount.AccountNumber;
+                                ViewBag.AccountName = invoiceAccount.AccountName;
+                            }
+
+                        }).Wait();
                     }
                 }
             }

@@ -70,8 +70,11 @@ namespace AccountRegistry.Controllers
 
                 Task.Run(async () =>
                 {
-                    var eth = new Ethereum();
-                    var result = await eth.ExecuteContractAuth("h@ck3r00", model.BuyerEmail, model.InvoiceAccountId.ToString());
+                    var userId = User.Identity.GetUserId();
+                    var address = db.Companies.Where(a => a.ApplicationUserId == userId).Select(a => a.Address).ToList<string>();
+                    var accountNumber = db.InvoiceAccounts.Where(a => a.InvoiceAccountId == model.InvoiceAccountId).Select(a => a.AccountNumber).ToList<string>();
+                    var eth = new Ethereum(address[0]);
+                    var result = await eth.ExecuteContractAuth("h@ck3r00", model.BuyerEmail, accountNumber[0]);
 
                     if(result == "Buyer Authorised")
                     {
