@@ -99,14 +99,10 @@ namespace AccountRegistry.Controllers
             try
             {
                 var db = new ApplicationDbContext();
+                var invoiceAccount = db.InvoiceAccounts.Single(a => a.InvoiceAccountId == id);
 
-                var invoiceAccount = new InvoiceAccount
-                {
-                    AccountNumber = collection["AccountNumber"].ToString(),
-                    AccountName = collection["AccountName"].ToString(),
-                    ApplicationUserId = User.Identity.GetUserId(),
-                    InvoiceAccountId = id
-                };
+                invoiceAccount.AccountNumber = collection["AccountNumber"].ToString();
+                invoiceAccount.AccountName = collection["AccountName"].ToString();
 
                 db.InvoiceAccounts.Attach(invoiceAccount);
                 var entry = db.Entry(invoiceAccount);
@@ -114,7 +110,7 @@ namespace AccountRegistry.Controllers
                 entry.Property(e => e.AccountName).IsModified = true;
                 db.SaveChanges();
                 return RedirectToAction("Index");
-        } 
+            } 
             catch
             {
                 return View();
