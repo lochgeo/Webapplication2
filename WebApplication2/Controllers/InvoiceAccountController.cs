@@ -21,6 +21,8 @@ namespace AccountRegistry.Controllers
             var AccountList = db.InvoiceAccounts
                 .Where(InvoiceAccount => InvoiceAccount.ApplicationUserId == userId)
                 .OrderBy(a => a.InvoiceAccountId);
+            var address = db.Companies.Where(a => a.ApplicationUserId == userId).Select(a => a.Address).ToList<string>();
+            ViewBag.Address = address[0];
             return View(AccountList);
         }
 

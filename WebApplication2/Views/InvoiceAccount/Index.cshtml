@@ -4,11 +4,9 @@
     ViewBag.Title = "Registered Accounts";
 }
 
-<h2>Index</h2>
+<h2>Registered Accounts</h2>
+<p>Ethereum Address - <a href="https://testnet.etherscan.io/address/@ViewBag.Address" + @ViewBag.Address>@ViewBag.Address</a></p>
 
-<p>
-    @Html.ActionLink("Create New", "Create")
-</p>
 <table class="table table-striped">
     <tr>
         <th>
@@ -55,3 +53,7 @@
 }
 
 </table>
+
+<p>
+    @Html.ActionLink("Create New", "Create", null, new { @class = "btn btn-primary" })
+</p>

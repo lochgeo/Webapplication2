@@ -25,6 +25,8 @@ namespace AccountRegistry.Controllers
             var AccessList = db.AccessCodes
                 .Where(a => AccountList.Contains(a.InvoiceAccountId))
                 .OrderBy(a => a.InvoiceAccountId);
+            var address = db.Companies.Where(a => a.ApplicationUserId == user).Select(a => a.Address).ToList<string>();
+            ViewBag.Address = address[0];
             return View(AccessList);
         }
 

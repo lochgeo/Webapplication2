@@ -4,7 +4,8 @@
     ViewBag.Title = "Access Codes";
 }
 
-<h2>Index</h2>
+<h2>Access Codes</h2>
+<p>Ethereum Address - <a href="https://testnet.etherscan.io/address/@ViewBag.Address" + @ViewBag.Address>@ViewBag.Address</a></p>
 
 <table class="table table-striped">
     <tr>
@@ -38,8 +39,7 @@
             @Html.DisplayFor(modelItem => item.Confirmed)
         </td>
         <td>
-            @Html.ActionLink("Details", "Details", new { id=item.AccessCodeId }) |
-            @Html.ActionLink("Delete", "Delete", new { id=item.AccessCodeId })
+            @Html.ActionLink("Details", "Details", new { id=item.AccessCodeId })
         </td>
     </tr>
 }
