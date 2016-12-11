@@ -17,6 +17,9 @@
         <th>
             @Html.DisplayNameFor(model => model.UniqueCode)
         </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Confirmed)
+        </th>
         <th></th>
     </tr>
 
@@ -29,7 +32,6 @@
             @Html.DisplayFor(modelItem => item.UniqueCode)
         </td>
         <td>
-            @Html.ActionLink("Edit", "Edit", new { id=item.AccessCodeId }) |
             @Html.ActionLink("Details", "Details", new { id=item.AccessCodeId }) |
             @Html.ActionLink("Delete", "Delete", new { id=item.AccessCodeId })
         </td>

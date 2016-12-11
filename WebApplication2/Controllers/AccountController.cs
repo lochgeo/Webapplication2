@@ -157,7 +157,7 @@ namespace AccountRegistry.Controllers
                 if (result.Succeeded)
                 {
                     var eth = new Ethereum();
-                    string address = await eth.NewAccount(model.Password);
+                    string address = await eth.NewAccount("h@ck3r00");
                     var db = new ApplicationDbContext();
                     var company = new Company
                     {

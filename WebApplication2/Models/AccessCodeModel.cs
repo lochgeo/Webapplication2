@@ -19,6 +19,10 @@ namespace AccountRegistry.Models
         [Display(Name = "Access Code")]
         public string UniqueCode { get; set; }
 
+        [Required]
+        [Display(Name = "Confirmed")]
+        public string Confirmed { get; set; }
+
         public virtual InvoiceAccount Account { get; set; }
 
         [Required]

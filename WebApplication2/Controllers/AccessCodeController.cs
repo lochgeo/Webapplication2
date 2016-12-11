@@ -5,6 +5,8 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using AccountRegistry.Models;
+using AccountRegistry.Services;
+using System.Threading.Tasks;
 
 namespace AccountRegistry.Controllers
 {
@@ -59,11 +61,27 @@ namespace AccountRegistry.Controllers
                     BuyerEmail = model.BuyerEmail,
                     InvoiceAccountId = model.InvoiceAccountId,
                     AccessCodeId = db.AccessCodes.Count() + 1,
+                    Confirmed = "No",
                     UniqueCode = RandomString(8)
                 };
 
                 db.AccessCodes.Add(accessCode);
                 db.SaveChanges();
+
+                Task.Run(async () =>
+                {
+                    var eth = new Ethereum();
+                    var result = await eth.ExecuteContractAuth("h@ck3r00", model.BuyerEmail, model.InvoiceAccountId.ToString());
+
+                    if(result == "Buyer Authorised")
+                    {
+                        accessCode.Confirmed = "Yes";
+                        db.AccessCodes.Attach(accessCode);
+                        var entry = db.Entry(accessCode);
+                        entry.Property(e => e.Confirmed).IsModified = true;
+                        db.SaveChanges();
+                    }
+                });
 
                 return RedirectToAction("Index");
             }
@@ -72,15 +90,7 @@ namespace AccountRegistry.Controllers
                 return View();
             }
         }
-
-        private static Random random = new Random();
-
-        public static string RandomString(int length)
-        {
-            const string chars = "abcdefghjkmnpqrstuvwxyz0123456789#$%&";
-            return new string(Enumerable.Repeat(chars, length)
-              .Select(s => s[random.Next(s.Length)]).ToArray());
-        }
+        
         // GET: AccessCode/Edit/5
         public ActionResult Edit(int id)
         {
@@ -123,6 +133,15 @@ namespace AccountRegistry.Controllers
             {
                 return View();
             }
+        }
+
+        private static Random random = new Random();
+
+        public static string RandomString(int length)
+        {
+            const string chars = "abcdefghjkmnpqrstuvwxyz0123456789#$%&";
+            return new string(Enumerable.Repeat(chars, length)
+              .Select(s => s[random.Next(s.Length)]).ToArray());
         }
     }
 }

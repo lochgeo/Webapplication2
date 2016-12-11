@@ -5,6 +5,9 @@ using System.Web;
 using Nethereum.Hex.HexTypes;
 using Nethereum.Web3;
 using System.Threading.Tasks;
+using System.Threading;
+using Nethereum.ABI.FunctionEncoding.Attributes;
+using Nethereum.RPC.Eth.DTOs;
 
 namespace AccountRegistry.Services
 {
@@ -12,17 +15,21 @@ namespace AccountRegistry.Services
     {
         private readonly Web3 web3;
         private Contract contract;
-        private string abi = @"[{ ""constant"": true, ""inputs"": [{ ""name"": """", ""type"": ""uint256"" }], ""name"": ""proposals"", ""outputs"": [{ ""name"": ""recipient"", ""type"": ""address"" }, { ""name"": ""amount"", ""type"": ""uint256"" }, { ""name"": ""description"", ""type"": ""string"" }, { ""name"": ""votingDeadline"", ""type"": ""uint256"" }, { ""name"": ""open"", ""type"": ""bool"" }, { ""name"": ""proposalPassed"", ""type"": ""bool"" }, { ""name"": ""proposalHash"", ""type"": ""bytes32"" }, { ""name"": ""proposalDeposit"", ""type"": ""uint256"" }, { ""name"": ""newCurator"", ""type"": ""bool"" }, { ""name"": ""yea"", ""type"": ""uint256"" }, { ""name"": ""nay"", ""type"": ""uint256"" }, { ""name"": ""creator"", ""type"": ""address"" }], ""type"": ""function"" }, { ""constant"": false, ""inputs"": [{ ""name"": ""_spender"", ""type"": ""address"" }, { ""name"": ""_amount"", ""type"": ""uint256"" }], ""name"": ""approve"", ""outputs"": [{ ""name"": ""success"", ""type"": ""bool"" }], ""type"": ""function"" }, { ""constant"": true, ""inputs"": [], ""name"": ""minTokensToCreate"", ""outputs"": [{ ""name"": """", ""type"": ""uint256"" }], ""type"": ""function"" }, { ""constant"": true, ""inputs"": [], ""name"": ""rewardAccount"", ""outputs"": [{ ""name"": """", ""type"": ""address"" }], ""type"": ""function"" }, { ""constant"": true, ""inputs"": [], ""name"": ""daoCreator"", ""outputs"": [{ ""name"": """", ""type"": ""address"" }], ""type"": ""function"" }, { ""constant"": true, ""inputs"": [], ""name"": ""totalSupply"", ""outputs"": [{ ""name"": """", ""type"": ""uint256"" }], ""type"": ""function"" }, { ""constant"": true, ""inputs"": [], ""name"": ""divisor"", ""outputs"": [{ ""name"": ""divisor"", ""type"": ""uint256"" }], ""type"": ""function"" }, { ""constant"": true, ""inputs"": [], ""name"": ""extraBalance"", ""outputs"": [{ ""name"": """", ""type"": ""address"" }], ""type"": ""function"" }, { ""constant"": false, ""inputs"": [{ ""name"": ""_proposalID"", ""type"": ""uint256"" }, { ""name"": ""_transactionData"", ""type"": ""bytes"" }], ""name"": ""executeProposal"", ""outputs"": [{ ""name"": ""_success"", ""type"": ""bool"" }], ""type"": ""function"" }, { ""constant"": false, ""inputs"": [{ ""name"": ""_from"", ""type"": ""address"" }, { ""name"": ""_to"", ""type"": ""address"" }, { ""name"": ""_value"", ""type"": ""uint256"" }], ""name"": ""transferFrom"", ""outputs"": [{ ""name"": ""success"", ""type"": ""bool"" }], ""type"": ""function"" }, { ""constant"": false, ""inputs"": [], ""name"": ""unblockMe"", ""outputs"": [{ ""name"": """", ""type"": ""bool"" }], ""type"": ""function"" }, { ""constant"": true, ""inputs"": [], ""name"": ""totalRewardToken"", ""outputs"": [{ ""name"": """", ""type"": ""uint256"" }], ""type"": ""function"" }, { ""constant"": true, ""inputs"": [], ""name"": ""actualBalance"", ""outputs"": [{ ""name"": ""_actualBalance"", ""type"": ""uint256"" }], ""type"": ""function"" }, { ""constant"": true, ""inputs"": [], ""name"": ""closingTime"", ""outputs"": [{ ""name"": """", ""type"": ""uint256"" }], ""type"": ""function"" }, { ""constant"": true, ""inputs"": [{ ""name"": """", ""type"": ""address"" }], ""name"": ""allowedRecipients"", ""outputs"": [{ ""name"": """", ""type"": ""bool"" }], ""type"": ""function"" }, { ""constant"": false, ""inputs"": [{ ""name"": ""_to"", ""type"": ""address"" }, { ""name"": ""_value"", ""type"": ""uint256"" }], ""name"": ""transferWithoutReward"", ""outputs"": [{ ""name"": ""success"", ""type"": ""bool"" }], ""type"": ""function"" }, { ""constant"": false, ""inputs"": [], ""name"": ""refund"", ""outputs"": [], ""type"": ""function"" }, { ""constant"": false, ""inputs"": [{ ""name"": ""_recipient"", ""type"": ""address"" }, { ""name"": ""_amount"", ""type"": ""uint256"" }, { ""name"": ""_description"", ""type"": ""string"" }, { ""name"": ""_transactionData"", ""type"": ""bytes"" }, { ""name"": ""_debatingPeriod"", ""type"": ""uint256"" }, { ""name"": ""_newCurator"", ""type"": ""bool"" }], ""name"": ""newProposal"", ""outputs"": [{ ""name"": ""_proposalID"", ""type"": ""uint256"" }], ""type"": ""function"" }, { ""constant"": true, ""inputs"": [{ ""name"": """", ""type"": ""address"" }], ""name"": ""DAOpaidOut"", ""outputs"": [{ ""name"": """", ""type"": ""uint256"" }], ""type"": ""function"" }, { ""constant"": true, ""inputs"": [], ""name"": ""minQuorumDivisor"", ""outputs"": [{ ""name"": """", ""type"": ""uint256"" }], ""type"": ""function"" }, { ""constant"": false, ""inputs"": [{ ""name"": ""_newContract"", ""type"": ""address"" }], ""name"": ""newContract"", ""outputs"": [], ""type"": ""function"" }, { ""constant"": true, ""inputs"": [{ ""name"": ""_owner"", ""type"": ""address"" }], ""name"": ""balanceOf"", ""outputs"": [{ ""name"": ""balance"", ""type"": ""uint256"" }], ""type"": ""function"" }, { ""constant"": false, ""inputs"": [{ ""name"": ""_recipient"", ""type"": ""address"" }, { ""name"": ""_allowed"", ""type"": ""bool"" }], ""name"": ""changeAllowedRecipients"", ""outputs"": [{ ""name"": ""_success"", ""type"": ""bool"" }], ""type"": ""function"" }, { ""constant"": false, ""inputs"": [], ""name"": ""halveMinQuorum"", ""outputs"": [{ ""name"": ""_success"", ""type"": ""bool"" }], ""type"": ""function"" }, { ""constant"": true, ""inputs"": [{ ""name"": """", ""type"": ""address"" }], ""name"": ""paidOut"", ""outputs"": [{ ""name"": """", ""type"": ""uint256"" }], ""type"": ""function"" }, { ""constant"": false, ""inputs"": [{ ""name"": ""_proposalID"", ""type"": ""uint256"" }, { ""name"": ""_newCurator"", ""type"": ""address"" }], ""name"": ""splitDAO"", ""outputs"": [{ ""name"": ""_success"", ""type"": ""bool"" }], ""type"": ""function"" }, { ""constant"": true, ""inputs"": [], ""name"": ""DAOrewardAccount"", ""outputs"": [{ ""name"": """", ""type"": ""address"" }], ""type"": ""function"" }, { ""constant"": true, ""inputs"": [], ""name"": ""proposalDeposit"", ""outputs"": [{ ""name"": """", ""type"": ""uint256"" }], ""type"": ""function"" }, { ""constant"": true, ""inputs"": [], ""name"": ""numberOfProposals"", ""outputs"": [{ ""name"": ""_numberOfProposals"", ""type"": ""uint256"" }], ""type"": ""function"" }, { ""constant"": true, ""inputs"": [], ""name"": ""lastTimeMinQuorumMet"", ""outputs"": [{ ""name"": """", ""type"": ""uint256"" }], ""type"": ""function"" }, { ""constant"": false, ""inputs"": [{ ""name"": ""_toMembers"", ""type"": ""bool"" }], ""name"": ""retrieveDAOReward"", ""outputs"": [{ ""name"": ""_success"", ""type"": ""bool"" }], ""type"": ""function"" }, { ""constant"": false, ""inputs"": [], ""name"": ""receiveEther"", ""outputs"": [{ ""name"": """", ""type"": ""bool"" }], ""type"": ""function"" }, { ""constant"": false, ""inputs"": [{ ""name"": ""_to"", ""type"": ""address"" }, { ""name"": ""_value"", ""type"": ""uint256"" }], ""name"": ""transfer"", ""outputs"": [{ ""name"": ""success"", ""type"": ""bool"" }], ""type"": ""function"" }, { ""constant"": true, ""inputs"": [], ""name"": ""isFueled"", ""outputs"": [{ ""name"": """", ""type"": ""bool"" }], ""type"": ""function"" }, { ""constant"": false, ""inputs"": [{ ""name"": ""_tokenHolder"", ""type"": ""address"" }], ""name"": ""createTokenProxy"", ""outputs"": [{ ""name"": ""success"", ""type"": ""bool"" }], ""type"": ""function"" }, { ""constant"": true, ""inputs"": [{ ""name"": ""_proposalID"", ""type"": ""uint256"" }], ""name"": ""getNewDAOAddress"", ""outputs"": [{ ""name"": ""_newDAO"", ""type"": ""address"" }], ""type"": ""function"" }, { ""constant"": false, ""inputs"": [{ ""name"": ""_proposalID"", ""type"": ""uint256"" }, { ""name"": ""_supportsProposal"", ""type"": ""bool"" }], ""name"": ""vote"", ""outputs"": [{ ""name"": ""_voteID"", ""type"": ""uint256"" }], ""type"": ""function"" }, { ""constant"": false, ""inputs"": [], ""name"": ""getMyReward"", ""outputs"": [{ ""name"": ""_success"", ""type"": ""bool"" }], ""type"": ""function"" }, { ""constant"": true, ""inputs"": [{ ""name"": """", ""type"": ""address"" }], ""name"": ""rewardToken"", ""outputs"": [{ ""name"": """", ""type"": ""uint256"" }], ""type"": ""function"" }, { ""constant"": false, ""inputs"": [{ ""name"": ""_from"", ""type"": ""address"" }, { ""name"": ""_to"", ""type"": ""address"" }, { ""name"": ""_value"", ""type"": ""uint256"" }], ""name"": ""transferFromWithoutReward"", ""outputs"": [{ ""name"": ""success"", ""type"": ""bool"" }], ""type"": ""function"" }, { ""constant"": true, ""inputs"": [{ ""name"": ""_owner"", ""type"": ""address"" }, { ""name"": ""_spender"", ""type"": ""address"" }], ""name"": ""allowance"", ""outputs"": [{ ""name"": ""remaining"", ""type"": ""uint256"" }], ""type"": ""function"" }, { ""constant"": false, ""inputs"": [{ ""name"": ""_proposalDeposit"", ""type"": ""uint256"" }], ""name"": ""changeProposalDeposit"", ""outputs"": [], ""type"": ""function"" }, { ""constant"": true, ""inputs"": [{ ""name"": """", ""type"": ""address"" }], ""name"": ""blocked"", ""outputs"": [{ ""name"": """", ""type"": ""uint256"" }], ""type"": ""function"" }, { ""constant"": true, ""inputs"": [], ""name"": ""curator"", ""outputs"": [{ ""name"": """", ""type"": ""address"" }], ""type"": ""function"" }, { ""constant"": true, ""inputs"": [{ ""name"": ""_proposalID"", ""type"": ""uint256"" }, { ""name"": ""_recipient"", ""type"": ""address"" }, { ""name"": ""_amount"", ""type"": ""uint256"" }, { ""name"": ""_transactionData"", ""type"": ""bytes"" }], ""name"": ""checkProposalCode"", ""outputs"": [{ ""name"": ""_codeChecksOut"", ""type"": ""bool"" }], ""type"": ""function"" }, { ""constant"": true, ""inputs"": [], ""name"": ""privateCreation"", ""outputs"": [{ ""name"": """", ""type"": ""address"" }], ""type"": ""function"" }, { ""inputs"": [{ ""name"": ""_curator"", ""type"": ""address"" }, { ""name"": ""_daoCreator"", ""type"": ""address"" }, { ""name"": ""_proposalDeposit"", ""type"": ""uint256"" }, { ""name"": ""_minTokensToCreate"", ""type"": ""uint256"" }, { ""name"": ""_closingTime"", ""type"": ""uint256"" }, { ""name"": ""_privateCreation"", ""type"": ""address"" }], ""type"": ""constructor"" }, { ""anonymous"": false, ""inputs"": [{ ""indexed"": true, ""name"": ""_from"", ""type"": ""address"" }, { ""indexed"": true, ""name"": ""_to"", ""type"": ""address"" }, { ""indexed"": false, ""name"": ""_amount"", ""type"": ""uint256"" }], ""name"": ""Transfer"", ""type"": ""event"" }, { ""anonymous"": false, ""inputs"": [{ ""indexed"": true, ""name"": ""_owner"", ""type"": ""address"" }, { ""indexed"": true, ""name"": ""_spender"", ""type"": ""address"" }, { ""indexed"": false, ""name"": ""_amount"", ""type"": ""uint256"" }], ""name"": ""Approval"", ""type"": ""event"" }, { ""anonymous"": false, ""inputs"": [{ ""indexed"": false, ""name"": ""value"", ""type"": ""uint256"" }], ""name"": ""FuelingToDate"", ""type"": ""event"" }, { ""anonymous"": false, ""inputs"": [{ ""indexed"": true, ""name"": ""to"", ""type"": ""address"" }, { ""indexed"": false, ""name"": ""amount"", ""type"": ""uint256"" }], ""name"": ""CreatedToken"", ""type"": ""event"" }, { ""anonymous"": false, ""inputs"": [{ ""indexed"": true, ""name"": ""to"", ""type"": ""address"" }, { ""indexed"": false, ""name"": ""value"", ""type"": ""uint256"" }], ""name"": ""Refund"", ""type"": ""event"" }, { ""anonymous"": false, ""inputs"": [{ ""indexed"": true, ""name"": ""proposalID"", ""type"": ""uint256"" }, { ""indexed"": false, ""name"": ""recipient"", ""type"": ""address"" }, { ""indexed"": false, ""name"": ""amount"", ""type"": ""uint256"" }, { ""indexed"": false, ""name"": ""newCurator"", ""type"": ""bool"" }, { ""indexed"": false, ""name"": ""description"", ""type"": ""string"" }], ""name"": ""ProposalAdded"", ""type"": ""event"" }, { ""anonymous"": false, ""inputs"": [{ ""indexed"": true, ""name"": ""proposalID"", ""type"": ""uint256"" }, { ""indexed"": false, ""name"": ""position"", ""type"": ""bool"" }, { ""indexed"": true, ""name"": ""voter"", ""type"": ""address"" }], ""name"": ""Voted"", ""type"": ""event"" }, { ""anonymous"": false, ""inputs"": [{ ""indexed"": true, ""name"": ""proposalID"", ""type"": ""uint256"" }, { ""indexed"": false, ""name"": ""result"", ""type"": ""bool"" }, { ""indexed"": false, ""name"": ""quorum"", ""type"": ""uint256"" }], ""name"": ""ProposalTallied"", ""type"": ""event"" }, { ""anonymous"": false, ""inputs"": [{ ""indexed"": true, ""name"": ""_newCurator"", ""type"": ""address"" }], ""name"": ""NewCurator"", ""type"": ""event"" }, { ""anonymous"": false, ""inputs"": [{ ""indexed"": true, ""name"": ""_recipient"", ""type"": ""address"" }, { ""indexed"": false, ""name"": ""_allowed"", ""type"": ""bool"" }], ""name"": ""AllowedRecipientChanged"", ""type"": ""event"" }]";
+        string senderAddress = "";
+        static string contractAddress = "0x28ea3b854008249cf823e517f7ea5f08cbea820e";
+        static string contractAbi = @"[{""constant"":false,""inputs"":[{""name"":""seller"",""type"":""address""},{""name"":""buyer_email"",""type"":""string""},{""name"":""account_number"",""type"":""string""}],""name"":""Authorize"",""outputs"":[{""name"":""result"",""type"":""string""}],""payable"":false,""type"":""function""},{""constant"":false,""inputs"":[{""name"":""seller"",""type"":""address""},{""name"":""account_number"",""type"":""string""},{""name"":""account_name"",""type"":""string""}],""name"":""StoreAccount"",""outputs"":[{""name"":""result"",""type"":""string""}],""payable"":false,""type"":""function""},{""constant"":false,""inputs"":[{""name"":""seller"",""type"":""address""},{""name"":""buyer_email"",""type"":""string""},{""name"":""account_number"",""type"":""string""}],""name"":""ViewAccount"",""outputs"":[{""name"":""result"",""type"":""string""}],""payable"":false,""type"":""function""},{""constant"":false,""inputs"":[{""name"":""seller"",""type"":""address""},{""name"":""buyer_email"",""type"":""string""},{""name"":""account_number"",""type"":""string""}],""name"":""Revoke"",""outputs"":[{""name"":""result"",""type"":""string""}],""payable"":false,""type"":""function""},{""anonymous"":false,""inputs"":[{""indexed"":true,""name"":""seller"",""type"":""address""},{""indexed"":false,""name"":""result"",""type"":""string""}],""name"":""NotifyResult"",""type"":""event""}]";
 
         public Ethereum()
         {
             this.web3 = new Web3("http://45.79.188.21:8081");
+            this.contract = web3.Eth.GetContract(contractAbi, contractAddress);
         }
 
-        public Ethereum(string address)
+        public Ethereum(string _address)
         {
             this.web3 = new Web3("http://45.79.188.21:8081");
-            this.contract = web3.Eth.GetContract(abi, address);
+            this.contract = web3.Eth.GetContract(contractAbi, contractAddress);
+            this.senderAddress = _address;
         }
 
         public async Task<HexBigInteger> GetBlockNum()
@@ -33,6 +40,90 @@ namespace AccountRegistry.Services
         public async Task<string> NewAccount(string passPhrase)
         {
             return await web3.Personal.NewAccount.SendRequestAsync(passPhrase);
+        }
+
+        public async Task<string> ExecuteContractStore(string passPhrase, string accountNumber, string accountName)
+        {
+            var gas = new HexBigInteger(1000000);
+            var res = await web3.Personal.UnlockAccount.SendRequestAsync(senderAddress, passPhrase, new HexBigInteger(120));
+
+            Function storeFn = contract.GetFunction("StoreAccount");
+            Event notifyResult = contract.GetEvent("NotifyResult");
+            var filterAll = await notifyResult.CreateFilterAsync();
+            var storeTxHash = await storeFn.SendTransactionAsync(senderAddress, gas, null, senderAddress, accountNumber, accountName);
+            var receipt = await GetReceiptAsync(storeTxHash);
+            var log = await notifyResult.GetFilterChanges<NotifyEvent>(filterAll);
+
+            return log[0].Event.Result;
+        }
+
+        public async Task<string> ExecuteContractView(string passPhrase, string buyerEmail, string accountNumber)
+        {
+            var gas = new HexBigInteger(1000000);
+            var res = await web3.Personal.UnlockAccount.SendRequestAsync(senderAddress, passPhrase, new HexBigInteger(120));
+
+            Function viewFn = contract.GetFunction("ViewAccount");
+            Event notifyResult = contract.GetEvent("NotifyResult");
+            var filterAll = await notifyResult.CreateFilterAsync();
+            var viewTxHash = await viewFn.SendTransactionAsync(senderAddress, gas, null, senderAddress, buyerEmail, accountNumber);
+            var receipt = await GetReceiptAsync(viewTxHash);
+            var log = await notifyResult.GetFilterChanges<NotifyEvent>(filterAll);
+
+            return log[0].Event.Result;
+        }
+
+        public async Task<string> ExecuteContractAuth(string passPhrase, string buyerEmail, string accountNumber)
+        {
+            var gas = new HexBigInteger(1000000);
+            var res = await web3.Personal.UnlockAccount.SendRequestAsync(senderAddress, passPhrase, new HexBigInteger(120));
+
+            Function authFn = contract.GetFunction("StoreAccount");
+            Event notifyResult = contract.GetEvent("NotifyResult");
+            var filterAll = await notifyResult.CreateFilterAsync();
+            var authTxHash = await authFn.SendTransactionAsync(senderAddress, gas, null, senderAddress, buyerEmail, accountNumber);
+            var receipt = await GetReceiptAsync(authTxHash);
+            var log = await notifyResult.GetFilterChanges<NotifyEvent>(filterAll);
+
+            return log[0].Event.Result;
+        }
+
+        public async Task<string> ExecuteContractRevoke(string passPhrase, string buyerEmail, string accountNumber)
+        {
+            var gas = new HexBigInteger(1000000);
+            var res = await web3.Personal.UnlockAccount.SendRequestAsync(senderAddress, passPhrase, new HexBigInteger(120));
+
+            Function revokeFn = contract.GetFunction("StoreAccount");
+            Event notifyResult = contract.GetEvent("NotifyResult");
+            var filterAll = await notifyResult.CreateFilterAsync();
+            var revokeTxHash = await revokeFn.SendTransactionAsync(senderAddress, gas, null, senderAddress, buyerEmail, accountNumber);
+            var receipt = await GetReceiptAsync(revokeTxHash);
+            var log = await notifyResult.GetFilterChanges<NotifyEvent>(filterAll);
+
+            return log[0].Event.Result;
+        }
+
+        public async Task<TransactionReceipt> GetReceiptAsync(string transactionHash)
+        {
+            var receipt = await web3.Eth.Transactions.GetTransactionReceipt.SendRequestAsync(transactionHash);
+
+            while (receipt == null)
+            {
+                Console.WriteLine("Sleeping for 1s");
+                Thread.Sleep(1000);
+                receipt = await web3.Eth.Transactions.GetTransactionReceipt.SendRequestAsync(transactionHash);
+            }
+
+            return receipt;
+        }
+
+        public class NotifyEvent
+        {
+            [Parameter("address", "seller", 1, true)]
+            public string Seller { get; set; }
+
+            [Parameter("string", "result", 2, false)]
+            public string Result { get; set; }
+
         }
 
     }
