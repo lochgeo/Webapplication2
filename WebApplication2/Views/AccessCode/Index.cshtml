@@ -1,13 +1,16 @@
 ﻿@model IEnumerable<AccountRegistry.Models.AccessCode>
 
 @{
-    ViewBag.Title = "Index";
+    ViewBag.Title = "Access Codes";
 }
 
 <h2>Index</h2>
 
 <table class="table table-striped">
     <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.InvoiceAccountId)
+        </th>
         <th>
             @Html.DisplayNameFor(model => model.BuyerEmail)
         </th>
@@ -22,6 +25,9 @@
 
 @foreach (var item in Model) {
     <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.InvoiceAccountId)
+        </td>
         <td>
             @Html.DisplayFor(modelItem => item.BuyerEmail)
         </td>

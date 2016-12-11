@@ -1,7 +1,7 @@
 ﻿@model IEnumerable<AccountRegistry.Models.InvoiceAccount>
 
 @{
-    ViewBag.Title = "Index";
+    ViewBag.Title = "Registered Accounts";
 }
 
 <h2>Index</h2>
@@ -11,6 +11,9 @@
 </p>
 <table class="table table-striped">
     <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.InvoiceAccountId)
+        </th>
         <th>
             @Html.DisplayNameFor(model => model.AccountNumber)
         </th>
@@ -28,6 +31,9 @@
 
 @foreach (var item in Model) {
     <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.InvoiceAccountId)
+        </td>
         <td>
             @Html.ActionLink(item.AccountNumber, "Details", new { id = item.InvoiceAccountId })
         </td>

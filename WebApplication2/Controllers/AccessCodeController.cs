@@ -20,16 +20,20 @@ namespace AccountRegistry.Controllers
             var user = User.Identity.GetUserId();
             var AccountList = db.InvoiceAccounts
                 .Where(InvoiceAccount => InvoiceAccount.ApplicationUserId == user)
-                .Select(InvoiceAccount => InvoiceAccount.InvoiceAccountId).ToList();
+                .Select(InvoiceAccount => InvoiceAccount.InvoiceAccountId)
+                .ToList();
             var AccessList = db.AccessCodes
-                .Where(a => AccountList.Contains(a.InvoiceAccountId));
+                .Where(a => AccountList.Contains(a.InvoiceAccountId))
+                .OrderBy(a => a.InvoiceAccountId);
             return View(AccessList);
         }
 
         // GET: AccessCode/Details/5
         public ActionResult Details(int id)
         {
-            return View();
+            var db = new ApplicationDbContext();
+            var code = db.AccessCodes.Single(a => a.AccessCodeId == id);
+            return View(code);
         }
 
         // GET: AccessCode/Create

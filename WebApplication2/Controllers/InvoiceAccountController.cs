@@ -18,7 +18,9 @@ namespace AccountRegistry.Controllers
         {
             var db = new ApplicationDbContext();
             var userId = User.Identity.GetUserId();
-            var AccountList = db.InvoiceAccounts.Where(InvoiceAccount => InvoiceAccount.ApplicationUserId == userId);
+            var AccountList = db.InvoiceAccounts
+                .Where(InvoiceAccount => InvoiceAccount.ApplicationUserId == userId)
+                .OrderBy(a => a.InvoiceAccountId);
             return View(AccountList);
         }
 
